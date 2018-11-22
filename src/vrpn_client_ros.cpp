@@ -69,7 +69,7 @@ namespace vrpn_client_ros
     if (clean_name.size() > 0)
     {
       int start_subsequent = 1;
-      if (isInvalidFirstCharInName(clean_name[0])) 
+      if (isInvalidFirstCharInName(clean_name[0]))
       {
         clean_name = clean_name.substr(1);
         start_subsequent = 0;
@@ -146,13 +146,13 @@ namespace vrpn_client_ros
     ros::Publisher *pose_pub;
     std::size_t sensor_index(0);
     ros::NodeHandle nh = tracker->output_nh_;
-    
+
     if (tracker->process_sensor_id_)
     {
       sensor_index = static_cast<std::size_t>(tracker_pose.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_pose.sensor));
     }
-    
+
     if (tracker->pose_pubs_.size() <= sensor_index)
     {
       tracker->pose_pubs_.resize(sensor_index + 1);
@@ -176,14 +176,35 @@ namespace vrpn_client_ros
         tracker->pose_msg_.header.stamp = ros::Time::now();
       }
 
-      tracker->pose_msg_.pose.position.x = tracker_pose.pos[0];
-      tracker->pose_msg_.pose.position.y = tracker_pose.pos[1];
-      tracker->pose_msg_.pose.position.z = tracker_pose.pos[2];
+      tracker->pose_msg_.pose.position.x = tracker_pose.pos[2];
+      tracker->pose_msg_.pose.position.y = tracker_pose.pos[0];
+      tracker->pose_msg_.pose.position.z = tracker_pose.pos[1];
 
-      tracker->pose_msg_.pose.orientation.x = tracker_pose.quat[0];
-      tracker->pose_msg_.pose.orientation.y = tracker_pose.quat[1];
-      tracker->pose_msg_.pose.orientation.z = tracker_pose.quat[2];
+    //   tracker->pose_msg_.pose.orientation.x = tracker_pose.quat[0];
+    //   tracker->pose_msg_.pose.orientation.y = tracker_pose.quat[1];
+    //   tracker->pose_msg_.pose.orientation.z = tracker_pose.quat[2];
+    //   tracker->pose_msg_.pose.orientation.w = tracker_pose.quat[3];
+      tracker->pose_msg_.pose.orientation.x = 0;
+      tracker->pose_msg_.pose.orientation.y = 0;
+      tracker->pose_msg_.pose.orientation.z = tracker_pose.quat[1];
       tracker->pose_msg_.pose.orientation.w = tracker_pose.quat[3];
+
+    //   //Quat to RPY
+    //   double roll, pitch, yaw;
+    //   tf2::Quaternion q_trans;
+    //   tf2::Matrix3x3 rot_mat(
+    //       tf2::Quaternion(tracker_pose.quat[0], tracker_pose.quat[1], tracker_pose.quat[2],
+    //                       tracker_pose.quat[3]));
+    //   rot_mat.getRPY(pitch, yaw, roll);
+
+    //   //RPY to quat
+    //   //q_trans.setRPY(roll, pitch, yaw);
+    //   q_trans.setRPY(0, 0, yaw);
+
+    //   tracker->pose_msg_.pose.orientation.x = q_trans[0];
+    //   tracker->pose_msg_.pose.orientation.y = q_trans[1];
+    //   tracker->pose_msg_.pose.orientation.z = q_trans[2];
+    //   tracker->pose_msg_.pose.orientation.w = q_trans[3];
 
       pose_pub->publish(tracker->pose_msg_);
     }
@@ -211,14 +232,36 @@ namespace vrpn_client_ros
         tracker->transform_stamped_.child_frame_id = tracker->tracker_name;
       }
 
-      tracker->transform_stamped_.transform.translation.x = tracker_pose.pos[0];
-      tracker->transform_stamped_.transform.translation.y = tracker_pose.pos[1];
-      tracker->transform_stamped_.transform.translation.z = tracker_pose.pos[2];
+      tracker->transform_stamped_.transform.translation.x = tracker_pose.pos[2];
+      tracker->transform_stamped_.transform.translation.y = tracker_pose.pos[0];
+      tracker->transform_stamped_.transform.translation.z = tracker_pose.pos[1];
 
-      tracker->transform_stamped_.transform.rotation.x = tracker_pose.quat[0];
-      tracker->transform_stamped_.transform.rotation.y = tracker_pose.quat[1];
-      tracker->transform_stamped_.transform.rotation.z = tracker_pose.quat[2];
+    //   tracker->transform_stamped_.transform.rotation.x = tracker_pose.quat[0];
+    //   tracker->transform_stamped_.transform.rotation.y = tracker_pose.quat[1];
+    //   tracker->transform_stamped_.transform.rotation.z = tracker_pose.quat[2];
+    //   tracker->transform_stamped_.transform.rotation.w = tracker_pose.quat[3];
+
+      tracker->transform_stamped_.transform.rotation.x = 0;
+      tracker->transform_stamped_.transform.rotation.y = 0;
+      tracker->transform_stamped_.transform.rotation.z = tracker_pose.quat[1];
       tracker->transform_stamped_.transform.rotation.w = tracker_pose.quat[3];
+
+    //   //Quat to RPY
+    //   double roll, pitch, yaw;
+    //   tf2::Quaternion q_trans;
+    //   tf2::Matrix3x3 rot_mat(
+    //       tf2::Quaternion(tracker_pose.quat[0], tracker_pose.quat[1], tracker_pose.quat[2],
+    //                       tracker_pose.quat[3]));
+    //   rot_mat.getRPY(pitch, yaw, roll);
+
+    //   //RPY to quat
+    //   //q_trans.setRPY(roll, pitch, yaw);
+    //   q_trans.setRPY(0, 0, yaw);
+
+    //   tracker->transform_stamped_.transform.rotation.x = q_trans[0];
+    //   tracker->transform_stamped_.transform.rotation.y = q_trans[1];
+    //   tracker->transform_stamped_.transform.rotation.z = q_trans[2];
+    //   tracker->transform_stamped_.transform.rotation.w = q_trans[3];
 
       tf_broadcaster.sendTransform(tracker->transform_stamped_);
     }
@@ -231,13 +274,13 @@ namespace vrpn_client_ros
     ros::Publisher *twist_pub;
     std::size_t sensor_index(0);
     ros::NodeHandle nh = tracker->output_nh_;
-    
+
     if (tracker->process_sensor_id_)
     {
       sensor_index = static_cast<std::size_t>(tracker_twist.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_twist.sensor));
     }
-    
+
     if (tracker->twist_pubs_.size() <= sensor_index)
     {
       tracker->twist_pubs_.resize(sensor_index + 1);
@@ -261,15 +304,15 @@ namespace vrpn_client_ros
         tracker->twist_msg_.header.stamp = ros::Time::now();
       }
 
-      tracker->twist_msg_.twist.linear.x = tracker_twist.vel[0];
-      tracker->twist_msg_.twist.linear.y = tracker_twist.vel[1];
-      tracker->twist_msg_.twist.linear.z = tracker_twist.vel[2];
+      tracker->twist_msg_.twist.linear.x = tracker_twist.vel[2];
+      tracker->twist_msg_.twist.linear.y = tracker_twist.vel[0];
+      tracker->twist_msg_.twist.linear.z = tracker_twist.vel[1];
 
       double roll, pitch, yaw;
       tf2::Matrix3x3 rot_mat(
           tf2::Quaternion(tracker_twist.vel_quat[0], tracker_twist.vel_quat[1], tracker_twist.vel_quat[2],
                           tracker_twist.vel_quat[3]));
-      rot_mat.getRPY(roll, pitch, yaw);
+      rot_mat.getRPY(pitch, yaw, roll);
 
       tracker->twist_msg_.twist.angular.x = roll;
       tracker->twist_msg_.twist.angular.y = pitch;
@@ -292,7 +335,7 @@ namespace vrpn_client_ros
       sensor_index = static_cast<std::size_t>(tracker_accel.sensor);
       nh = ros::NodeHandle(tracker->output_nh_, std::to_string(tracker_accel.sensor));
     }
-    
+
     if (tracker->accel_pubs_.size() <= sensor_index)
     {
       tracker->accel_pubs_.resize(sensor_index + 1);
@@ -316,15 +359,15 @@ namespace vrpn_client_ros
         tracker->accel_msg_.header.stamp = ros::Time::now();
       }
 
-      tracker->accel_msg_.accel.linear.x = tracker_accel.acc[0];
-      tracker->accel_msg_.accel.linear.y = tracker_accel.acc[1];
-      tracker->accel_msg_.accel.linear.z = tracker_accel.acc[2];
+      tracker->accel_msg_.accel.linear.x = tracker_accel.acc[2];
+      tracker->accel_msg_.accel.linear.y = tracker_accel.acc[0];
+      tracker->accel_msg_.accel.linear.z = tracker_accel.acc[1];
 
       double roll, pitch, yaw;
       tf2::Matrix3x3 rot_mat(
           tf2::Quaternion(tracker_accel.acc_quat[0], tracker_accel.acc_quat[1], tracker_accel.acc_quat[2],
                           tracker_accel.acc_quat[3]));
-      rot_mat.getRPY(roll, pitch, yaw);
+      rot_mat.getRPY(pitch, yaw, roll);
 
       tracker->accel_msg_.accel.angular.x = roll;
       tracker->accel_msg_.accel.angular.y = pitch;
